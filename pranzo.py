@@ -10,6 +10,7 @@ FIREFOX_DRIVER_PATH = '%s/geckodriver' % os.path.dirname(os.path.realpath(__file
 INPUT_PATH = 'input/'
 INPUT_FILENAME = 'lottery_results.pdf'
 URL = 'https://dcra.dc.gov/mrv'
+HEADING = 'October 2019 MRV Location Lottery Results'
 DESIRED_LOCATION = 'Georgetown'
 
 OUTPUT_PATH = 'output/'
@@ -53,7 +54,16 @@ def filter_by_location(current_list):
     if DESIRED_LOCATION:
         for item in current_list:
             if DESIRED_LOCATION in item:
-                new_list.append(item)
+                new_item_list = []
+
+                i = 0
+                for column in item:
+                    if i < 2:
+                        new_item_list.append(column)
+                    else:
+                        new_item_list.append( column if column==DESIRED_LOCATION else None )
+                    i = i+1
+                new_list.append(new_item_list)
         return new_list
     else:
         return current_List
@@ -71,7 +81,9 @@ def read_pdf(file):
         text = page.extractText()
         lines = text.splitlines()
 
-        lines = lines[8:] # remove month and columns
+        lines.remove(HEADING)
+        lines.remove('')
+        lines = lines[6:] # remove month and columns
         lines = list(divide_chunks(lines, 7))
         lines = filter_by_location(lines)
         data = data + lines
