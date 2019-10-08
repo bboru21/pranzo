@@ -3,3 +3,5 @@
 geckodriver
 *.log
 virtualenv
+output/*
+input/*
