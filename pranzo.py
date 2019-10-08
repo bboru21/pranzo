@@ -3,12 +3,17 @@ import sys
 from selenium import webdriver
 import requests
 import PyPDF2
+import pandas as pd
 
 FIREFOX_DRIVER_PATH = '%s/geckodriver' % os.path.dirname(os.path.realpath(__file__))
 
 INPUT_PATH = 'input/'
 INPUT_FILENAME = 'lottery_results.pdf'
 URL = 'https://dcra.dc.gov/mrv'
+DESIRED_LOCATION = 'Georgetown'
+
+OUTPUT_PATH = 'output/'
+OUTPUT_FILENAME = 'lottery_results.xlsx'
 
 def download_pdf(pdf_url):
     file = '%s%s' % (INPUT_PATH, INPUT_FILENAME)
@@ -35,6 +40,24 @@ def get_pdf_url():
 
     return href
 
+def divide_chunks(l, n):
+
+    # looping till length l
+    for i in range(0, len(l), n):
+        yield l[i:i + n]
+
+def filter_by_location(current_list):
+
+    new_list = []
+
+    if DESIRED_LOCATION:
+        for item in current_list:
+            if DESIRED_LOCATION in item:
+                new_list.append(item)
+        return new_list
+    else:
+        return current_List
+
 def read_pdf(file):
 
     pdf_file = open(file, 'rb')
@@ -42,21 +65,33 @@ def read_pdf(file):
     num_pages = pdf_reader.numPages
 
     i = 0
+    data = []
     while i < num_pages:
         page = pdf_reader.getPage(i)
         text = page.extractText()
         lines = text.splitlines()
-        print lines
+
+        lines = lines[8:] # remove month and columns
+        lines = list(divide_chunks(lines, 7))
+        lines = filter_by_location(lines)
+        data = data + lines
+
         i = i+1
+
+    df = pd.DataFrame(data, columns =['Site Permit', 'Business Name', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'])
+    with pd.ExcelWriter('%s%s' % (OUTPUT_PATH, OUTPUT_FILENAME)) as writer:
+        df.to_excel(writer)
 
     pdf_file.close()
 
 
 def run():
 
-    url = get_pdf_url()
-    file = download_pdf(url)
-
+    # url = get_pdf_url()
+    # print url
+    # file = download_pdf(url)
+    # print file
+    file = 'input/lottery_results.pdf'
     read_pdf(file)
 
 run()
