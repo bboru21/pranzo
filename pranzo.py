@@ -1,9 +1,13 @@
 import os
 import sys
-from selenium import webdriver
+from selenium import (
+    webdriver,
+    common as selenium_common
+)
 import requests
 import PyPDF2
 import pandas as pd
+import backoff
 
 FIREFOX_DRIVER_PATH = '%s/geckodriver' % os.path.dirname(os.path.realpath(__file__))
 
@@ -36,14 +40,20 @@ def download_pdf(pdf_url):
 
     return file
 
-
+# sometimes initial request produces "Secure Connection Failed" - PR_END_OF_FILE_ERROR
+@backoff.on_exception(
+    backoff.expo,
+    selenium_common.exceptions.WebDriverException,
+    max_tries=2,
+    jitter=None
+)
 def get_pdf_url():
 
     driver = webdriver.Firefox(
         executable_path=FIREFOX_DRIVER_PATH,
     )
+    driver.get(URL)
 
-    driver.get(URL) # TODO implement backoff for issues when requesting
     elem = driver.find_element_by_css_selector('#block-system-main .field-items .field-item a')
     href = elem.get_attribute('href')
     driver.close()
