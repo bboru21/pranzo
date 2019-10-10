@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 import os
 import sys
 from selenium import (
@@ -90,30 +91,57 @@ def update_schedule_by_location(current_list):
                         SCHEDULE[dow].append(name)
                 i += 1
 
+def clean_vendor_names(lines):
+    cleaned_lines = []
+    # TODO logic goes here to account for vendors with carriage returns
+    return lines
 
-def read_pdf(file):
-    # TODO logic may need to be updated from time to time due to pdf formatting
-    pdf_file = open(file, 'rb')
-    pdf_reader = PyPDF2.PdfFileReader(pdf_file)
+def process_pages(pdf_reader):
+    data = []
     num_pages = pdf_reader.numPages
 
     i = 0
     while i < num_pages:
         page = pdf_reader.getPage(i)
-        text = page.extractText()
+        text  = page.extractText()
         lines = text.splitlines()
 
-        lines.remove(HEADING)
-        lines.remove('')
-        lines = lines[6:] # remove month and columns
+        lines = clean_vendor_names(lines)
+
+        lines.remove(HEADING) # remove month and year heading
+        lines = ['L\'Enfant' if line == '' else line for line in lines] # correct encoding issue with right single quote
+        lines = lines[7:] # remove columns
+
         lines = list(divide_chunks(lines, 7))
-        update_schedule_by_location(lines)
+
+        data = data + lines
 
         i = i+1
+    return data
 
-    df = pd.DataFrame(SCHEDULE)
-    with pd.ExcelWriter('%s%s' % (OUTPUT_PATH, OUTPUT_FILENAME)) as writer:
-        df.to_excel(writer)
+def read_pdf(file):
+    # TODO logic may need to be updated from time to time due to pdf formatting
+    pdf_file = open(file, 'rb')
+    pdf_reader = PyPDF2.PdfFileReader(pdf_file, strict=False)
+
+    data = process_pages(pdf_reader)
+
+    # TODO write full schedule with tabs
+    # process_data(data)
+    # # Create a Pandas Excel writer using XlsxWriter as the engine.
+    # writer = pd.ExcelWriter('%s%s' % (OUTPUT_PATH, OUTPUT_FILENAME), engine='xlsxwriter')
+
+    # # Write each dataframe to a different worksheet.
+    # df1.to_excel(writer, sheet_name='Sheet1')
+    # df2.to_excel(writer, sheet_name='Sheet2')
+    # df3.to_excel(writer, sheet_name='Sheet3')
+
+    # # Close the Pandas Excel writer and output the Excel file.
+    # writer.save()
+
+    # df = pd.DataFrame(SCHEDULE)
+    # with pd.ExcelWriter('%s%s' % (OUTPUT_PATH, OUTPUT_FILENAME)) as writer:
+    #     df.to_excel(writer)
 
     pdf_file.close()
 
