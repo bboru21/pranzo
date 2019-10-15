@@ -4,8 +4,11 @@ A Python script for reading the Department of Consumer and Regulatory Affairs mo
 
 TLDR: Gets the DC Food Truck Schedule and downloads it as a readable spreadsheet.
 
+## Requirements
+* Mozilla Firefox Browser
+* The appropriate Gecko driver for your computer's operating system, dowloaded from https://github.com/mozilla/geckodriver/releases, un-carchived and moved to the root directory of this script
+
 ## Setup
-* Visit https://github.com/mozilla/geckodriver/releases and download and un-archive the appropriate Gecko driver for your OS. Move the newly created executable to the root directory of this script.
 * Run `sh setup.sh` to setup the VirtualEnvironment for the first time.
 
 ## Run Script
