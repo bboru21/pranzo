@@ -10,6 +10,7 @@ import PyPDF2
 import pandas as pd
 import backoff
 import re
+from datetime import date
 
 FIREFOX_DRIVER_PATH = '%s/geckodriver' % os.path.dirname(os.path.realpath(__file__))
 
@@ -20,7 +21,7 @@ URL = 'https://dcra.dc.gov/mrv'
 OUTPUT_PATH = 'output/'
 OUTPUT_FILENAME = 'lottery_results.xlsx'
 
-HEADING = 'October 2019 MRV Location Lottery Results' # TODO month/year need to be dynamic
+HEADING = '%s MRV Location Lottery Results' % date.today().strftime('%B %Y')
 DESIRED_LOCATION = 'Georgetown'
 SCHEDULE = {
     'Monday': [],
@@ -103,7 +104,12 @@ def process_pages(pdf_reader):
         lines = text.splitlines()
 
         lines = clean_lines(lines)
-        lines.remove(HEADING) # remove month and year heading
+        try:
+            # try and remove pesky heading column
+            lines.remove(HEADING)
+        except ValueError:
+            pass
+
         lines = ['L\'Enfant' if line == '' else line for line in lines] # correct encoding issue with right single quote
         lines = lines[7:] # remove columns
 
@@ -176,11 +182,11 @@ def read_pdf(file):
 
 def run():
 
-    url = get_pdf_url()
+    # url = get_pdf_url()
     # print url
-    file = download_pdf(url)
+    # file = download_pdf(url)
     # print file
-    # file = 'input/lottery_results.pdf'
+    file = 'input/lottery_results.pdf'
     read_pdf(file)
     print 'Schedule for %s has been downloaded to %s%s' % (HEADING, OUTPUT_PATH, OUTPUT_FILENAME)
 
