@@ -8,12 +8,14 @@ TLDR: Gets the DC Food Truck Schedule and downloads it as a readable spreadsheet
 * Visit https://github.com/mozilla/geckodriver/releases and download and un-archive the appropriate Gecko driver for your OS. Move the newly created executable to the root directory of this script.
 * Run `sh setup.sh` to setup the VirtualEnvironment for the first time.
 
-## Activate VirtualEnvironment
+## Run Script
+
+### Activate VirtualEnvironment
 ```
 source virtualenv/bin/activate
 ```
 
-## Run Script
+### Python Command
 ```
 python pranzo.py
 ```
