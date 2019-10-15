@@ -21,8 +21,8 @@ URL = 'https://dcra.dc.gov/mrv'
 OUTPUT_PATH = 'output/'
 OUTPUT_FILENAME = 'lottery_results.xlsx'
 
-HEADING = '%s MRV Location Lottery Results' % date.today().strftime('%B %Y')
-DESIRED_LOCATION = 'Georgetown'
+HEADING = '%s MRV Location Lottery Results' % date.today().strftime('%B %Y') # e.g. October 2019
+
 SCHEDULE = {
     'Monday': [],
     'Tuesday': [],
@@ -182,11 +182,11 @@ def read_pdf(file):
 
 def run():
 
-    # url = get_pdf_url()
+    url = get_pdf_url()
     # print url
-    # file = download_pdf(url)
+    file = download_pdf(url)
     # print file
-    file = 'input/lottery_results.pdf'
+    # file = 'input/lottery_results.pdf'
     read_pdf(file)
     print 'Schedule for %s has been downloaded to %s%s' % (HEADING, OUTPUT_PATH, OUTPUT_FILENAME)
 
