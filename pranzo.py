@@ -11,6 +11,9 @@ import pandas as pd
 import backoff
 import re
 from datetime import date
+from tinydb import TinyDB, Query
+
+db = TinyDB('db/db.json')
 
 FIREFOX_DRIVER_PATH = '%s/geckodriver' % os.path.dirname(os.path.realpath(__file__))
 
@@ -139,11 +142,16 @@ def process_data(data):
 
     processed_data = {}
 
+    table = db.table('vendors')
+
     for business_data in data:
 
         site_permit = business_data[0]
         business_name = business_data[1]
         weekly_schedule = business_data[2:]
+
+
+        table.insert({ 'business_name': business_name, 'doc_id': site_permit, 'alias': None })
 
         d = 0
         for day in weekly_schedule:
