@@ -20,5 +20,5 @@ source virtualenv/bin/activate
 
 ### Python Command
 ```
-python pranzo.py
+python pranzo.py --settings=settings_local
 ```

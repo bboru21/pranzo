@@ -4,3 +4,4 @@ PyPDF2      #==1.26.0
 pandas      #==0.24.2
 XlsxWriter  #==1.1.2
 backoff     #==1.8.0
+simple-settings

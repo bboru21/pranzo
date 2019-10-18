@@ -1,0 +1,5 @@
+YELP_CLIENT_ID = ''
+YELP_API_KEY = ''
+
+YELP_API_LOCATION = 'Washington, DC'
+YELP_API_CATEGORY = 'foodtrucks'

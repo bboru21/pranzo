@@ -11,6 +11,7 @@ import pandas as pd
 import backoff
 import re
 from datetime import date
+from simple_settings import settings
 
 FIREFOX_DRIVER_PATH = '%s/geckodriver' % os.path.dirname(os.path.realpath(__file__))
 
@@ -30,6 +31,8 @@ SCHEDULE = {
     'Thursday': [],
     'Friday': [],
 }
+
+YELP_BUSINESS_SEARCH = YelpBusinessesSearchAPI()
 
 
 def download_pdf(pdf_url):
@@ -145,6 +148,10 @@ def process_data(data):
         business_name = business_data[1]
         weekly_schedule = business_data[2:]
 
+        YELP_BUSINESS_SEARCH.search(business_name)
+
+        break
+
         d = 0
         for day in weekly_schedule:
             dow = get_dow(d)
@@ -171,22 +178,22 @@ def read_pdf(file):
     data = process_pages(pdf_reader)
     data = process_data(data)
 
-    writer = pd.ExcelWriter('%s%s' % (OUTPUT_PATH, OUTPUT_FILENAME), engine='xlsxwriter')
-    for location, location_schedule in data.iteritems():
-        df = pd.DataFrame(location_schedule)
-        df.to_excel(writer, sheet_name=location)
-    writer.save()
+    # writer = pd.ExcelWriter('%s%s' % (OUTPUT_PATH, OUTPUT_FILENAME), engine='xlsxwriter')
+    # for location, location_schedule in data.iteritems():
+    #     df = pd.DataFrame(location_schedule)
+    #     df.to_excel(writer, sheet_name=location)
+    # writer.save()
 
     pdf_file.close()
 
 
 def run():
 
-    url = get_pdf_url()
+    # url = get_pdf_url()
     # print url
-    file = download_pdf(url)
+    # file = download_pdf(url)
     # print file
-    # file = 'input/lottery_results.pdf'
+    file = 'input/lottery_results.pdf'
     read_pdf(file)
     print 'Schedule for %s has been downloaded to %s%s' % (HEADING, OUTPUT_PATH, OUTPUT_FILENAME)
 

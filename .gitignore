@@ -5,3 +5,4 @@ geckodriver
 virtualenv
 output/*
 input/*
+settings_local.py
