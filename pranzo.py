@@ -11,6 +11,7 @@ import pandas as pd
 import backoff
 import re
 from datetime import date
+from collections import OrderedDict
 
 FIREFOX_DRIVER_PATH = '%s/geckodriver' % os.path.dirname(os.path.realpath(__file__))
 
@@ -23,13 +24,14 @@ OUTPUT_FILENAME = 'lottery_results.xlsx'
 
 HEADING = '%s MRV Location Lottery Results' % date.today().strftime('%B %Y') # e.g. October 2019
 
-SCHEDULE = {
-    'Monday': [],
-    'Tuesday': [],
-    'Wednesday': [],
-    'Thursday': [],
-    'Friday': [],
-}
+
+class LastUpdatedOrderedDict(OrderedDict):
+    'Store items in the order the keys were last added'
+
+    def __setitem__(self, key, value):
+        if key in self:
+            del self[key]
+        OrderedDict.__setitem__(self, key, value)
 
 
 def initial_cleanup():
@@ -166,10 +168,13 @@ def process_data(data):
             if location:
 
                 if location not in processed_data:
-                    processed_data[location] = {}
-
-                if dow not in processed_data[location]:
-                    processed_data[location][dow] = []
+                    processed_data[location] = LastUpdatedOrderedDict({
+                        'Monday': [],
+                        'Tuesday': [],
+                        'Wednesday': [],
+                        'Thursday': [],
+                        'Friday': [],
+                    })
 
                 processed_data[location][dow].append(business_name)
 
