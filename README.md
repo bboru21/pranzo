@@ -15,10 +15,10 @@ TLDR: Gets the DC Food Truck Schedule and downloads it as a readable spreadsheet
 
 ### Activate VirtualEnvironment
 ```
-source virtualenv/bin/activate
+source venv/bin/activate
 ```
 
 ### Python Command
 ```
-python pranzo.py
+python3 pranzo.py
 ```

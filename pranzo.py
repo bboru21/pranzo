@@ -172,7 +172,7 @@ def read_pdf(file):
     data = process_data(data)
 
     writer = pd.ExcelWriter('%s%s' % (OUTPUT_PATH, OUTPUT_FILENAME), engine='xlsxwriter')
-    for location, location_schedule in data.iteritems():
+    for location, location_schedule in data.items():
         df = pd.DataFrame(location_schedule)
         df.to_excel(writer, sheet_name=location)
     writer.save()
@@ -183,15 +183,15 @@ def read_pdf(file):
 def run():
 
     url = get_pdf_url()
-    # print url
+    # print( url )
     file = download_pdf(url)
-    # print file
+    # print( file )
     # file = 'input/lottery_results.pdf'
     read_pdf(file)
-    print 'Schedule for %s has been downloaded to %s%s' % (HEADING, OUTPUT_PATH, OUTPUT_FILENAME)
+    print( 'Schedule for %s has been downloaded to %s%s' % (HEADING, OUTPUT_PATH, OUTPUT_FILENAME))
 
 run()
 
-print 'finis'
+print( 'finis' )
 
 
