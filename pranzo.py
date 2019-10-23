@@ -32,6 +32,13 @@ SCHEDULE = {
 }
 
 
+def initial_cleanup():
+    if os.path.exists('%s%s' % (INPUT_PATH, INPUT_FILENAME)):
+        os.remove('%s%s' % (INPUT_PATH, INPUT_FILENAME))
+
+    if os.path.exists('%s%s' % (OUTPUT_PATH, OUTPUT_FILENAME)):
+        os.remove('%s%s' % (OUTPUT_PATH, OUTPUT_FILENAME))
+
 def download_pdf(pdf_url):
     file = '%s%s' % (INPUT_PATH, INPUT_FILENAME)
     response = requests.get(pdf_url, stream=True)
@@ -188,6 +195,8 @@ def read_pdf(file):
 
 
 def run():
+
+    initial_cleanup()
 
     url = get_pdf_url()
     # print( url )
