@@ -129,8 +129,13 @@ def get_dow(d):
     it for the sheetname later.
 '''
 def clean_location_name(name):
+
+    if name == 'OFF':
+        return None
+
     invalid_excel_chars = re.compile(r'[\[\]\:\*\?\\/]')
     return re.sub(invalid_excel_chars, ' ', name)
+
 
 '''
     Takes chunked data, and puts it into more readable format for consumer purposes
@@ -151,13 +156,15 @@ def process_data(data):
             location = day
             location = clean_location_name(location)
 
-            if location not in processed_data:
-                processed_data[location] = {}
+            if location:
 
-            if dow not in processed_data[location]:
-                processed_data[location][dow] = []
+                if location not in processed_data:
+                    processed_data[location] = {}
 
-            processed_data[location][dow].append(business_name)
+                if dow not in processed_data[location]:
+                    processed_data[location][dow] = []
+
+                processed_data[location][dow].append(business_name)
 
             d += 1
 
