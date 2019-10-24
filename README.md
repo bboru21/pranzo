@@ -9,6 +9,9 @@ TLDR: Gets the DC Food Truck Schedule and downloads it as a readable spreadsheet
 * Mozilla Firefox Browser
 * The appropriate Gecko driver for your computer's operating system, dowloaded from https://github.com/mozilla/geckodriver/releases, un-carchived and moved to the root directory of this script
 
+## A Note on Python 3
+Currently this script is predicated on the host computer having python3 and pip3 references to Python 3 available. In the future, those refrences will be updated to python/pip once Python 2 reaches it's end of life. 
+
 ## Setup
 * Run the following  to setup the VirtualEnvironment for the first time:
 ```
