@@ -20,3 +20,8 @@ Run the following to activate the VirtualEnvironment, and kick off the Python sc
 ```
 sh runscript.sh
 ```
+
+Or alternatively, you can run the Python command yourself:
+```
+source venv/bin/activate && python3 pranzo.py
+```
