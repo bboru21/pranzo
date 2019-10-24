@@ -13,5 +13,5 @@ class Vendors(Base):
     name = Column(String)
     alias = Column(String)
 
-engine = create_engine('sqlite:///db/pranzodb.db', echo=True)
+engine = create_engine('sqlite:///data/db/pranzodb.db', echo=True)
 Base.metadata.create_all(engine)

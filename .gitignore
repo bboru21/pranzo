@@ -5,3 +5,4 @@ geckodriver
 venv
 output/*
 input/*
+data/db/*

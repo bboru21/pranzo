@@ -4,5 +4,5 @@ Intended for creating a database to associate data with specific Food Trucks, su
 ## Setup Database
 Run the following to setup the initial database:
 ```
-python3 db/setup_database.py
+python3 data/setup_database.py
 ```
