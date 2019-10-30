@@ -26,7 +26,7 @@ sh runscript.sh
 
 Or alternatively, you can run the Python command yourself:
 ```
-source venv/bin/activate && python3 pranzo.py
+source venv/bin/activate && python3 pranzo.py --settings=settings.base
 ```
 
 That's it for optaining the schedule via Excel Spreadsheet. If you want more, read on!

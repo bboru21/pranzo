@@ -12,15 +12,15 @@ import backoff
 import re
 from datetime import date
 from collections import OrderedDict
+from simple_settings import settings
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from models import Vendor
+
 
 FIREFOX_DRIVER_PATH = '%s/geckodriver' % os.path.dirname(os.path.realpath(__file__))
 
-INPUT_PATH = 'input/'
-INPUT_FILENAME = 'lottery_results.pdf'
 URL = 'https://dcra.dc.gov/mrv'
-
-OUTPUT_PATH = 'output/'
-OUTPUT_FILENAME = 'lottery_results.xlsx'
 
 HEADING = '%s MRV Location Lottery Results' % date.today().strftime('%B %Y') # e.g. October 2019
 
@@ -35,14 +35,14 @@ class LastUpdatedOrderedDict(OrderedDict):
 
 
 def initial_cleanup():
-    if os.path.exists('%s%s' % (INPUT_PATH, INPUT_FILENAME)):
-        os.remove('%s%s' % (INPUT_PATH, INPUT_FILENAME))
+    if os.path.exists('%s%s' % (settings.INPUT_PATH, settings.INPUT_FILENAME)):
+        os.remove('%s%s' % (settings.INPUT_PATH, settings.INPUT_FILENAME))
 
-    if os.path.exists('%s%s' % (OUTPUT_PATH, OUTPUT_FILENAME)):
-        os.remove('%s%s' % (OUTPUT_PATH, OUTPUT_FILENAME))
+    if os.path.exists('%s%s' % (settings.OUTPUT_PATH, settings.OUTPUT_FILENAME)):
+        os.remove('%s%s' % (settings.OUTPUT_PATH, settings.OUTPUT_FILENAME))
 
 def download_pdf(pdf_url):
-    file = '%s%s' % (INPUT_PATH, INPUT_FILENAME)
+    file = '%s%s' % (settings.INPUT_PATH, settings.INPUT_FILENAME)
     response = requests.get(pdf_url, stream=True)
 
     with open(file,"wb+") as pdf:
@@ -145,6 +145,25 @@ def clean_location_name(name):
     invalid_excel_chars = re.compile(r'[\[\]\:\*\?\\/]')
     return re.sub(invalid_excel_chars, ' ', name)
 
+def insert_vendor(site_permit, business_name):
+    engine = create_engine(settings.DATABASES['ENGINE'])
+
+    if engine.dialect.has_table(engine, 'vendor'):
+        Session = sessionmaker(bind=engine)
+        session = Session()
+
+        insert = {
+            "site_permit": site_permit,
+            "name": business_name
+        }
+
+        vendor = session.query(Vendor).filter_by(site_permit=site_permit).first()
+        if not vendor:
+            vendor = Vendor(**insert)
+            session.add(vendor)
+
+        session.commit()
+
 
 '''
     Takes chunked data, and puts it into more readable format for consumer purposes
@@ -158,6 +177,8 @@ def process_data(data):
         site_permit = business_data[0]
         business_name = business_data[1]
         weekly_schedule = business_data[2:]
+
+        insert_vendor(site_permit, business_name)
 
         d = 0
         for day in weekly_schedule:
@@ -190,26 +211,31 @@ def read_pdf(file):
     data = process_pages(pdf_reader)
     data = process_data(data)
 
-    writer = pd.ExcelWriter('%s%s' % (OUTPUT_PATH, OUTPUT_FILENAME), engine='xlsxwriter')
+    pdf_file.close()
+
+    return data
+
+def write_to_excel(data):
+
+    writer = pd.ExcelWriter('%s%s' % (settings.OUTPUT_PATH, settings.OUTPUT_FILENAME), engine='xlsxwriter')
     for location, location_schedule in data.items():
         df = pd.DataFrame(location_schedule)
         df.to_excel(writer, sheet_name=location)
     writer.save()
 
-    pdf_file.close()
-
 
 def run():
 
     initial_cleanup()
-
     url = get_pdf_url()
     # print( url )
     file = download_pdf(url)
     # print( file )
     # file = 'input/lottery_results.pdf'
-    read_pdf(file)
-    print( 'Schedule for %s has been downloaded to %s%s' % (HEADING, OUTPUT_PATH, OUTPUT_FILENAME))
+    data = read_pdf(file)
+    write_to_excel(data)
+
+    print( 'Schedule for %s has been downloaded to %s%s' % (HEADING, settings.OUTPUT_PATH, settings.OUTPUT_FILENAME))
 
 run()
 
