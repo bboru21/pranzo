@@ -116,7 +116,7 @@ def process_pages(pdf_reader):
             # try and remove pesky heading column
             lines.remove(HEADING)
         except ValueError:
-            pass
+            print('WARNING: No HEADING \"%s\" was not found in %s. This may cause issues reading the data.' % (HEADING, settings.INPUT_FILENAME))
 
         lines = ['L\'Enfant' if line == '' else line for line in lines] # correct encoding issue with right single quote
         lines = lines[7:] # remove columns
