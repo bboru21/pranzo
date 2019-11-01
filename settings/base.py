@@ -1,3 +1,4 @@
+USE_DATABASE = False
 DATABASES = {
     'ENGINE': 'sqlite:///db/pranzodb.db'
 }

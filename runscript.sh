@@ -2,5 +2,4 @@
 
 MAILTO=""
 
-source venv/bin/activate &&
-python3 pranzo.py --settings=settings.base
+source venv/bin/activate && python3 pranzo.py --settings=settings.local

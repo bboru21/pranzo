@@ -12,10 +12,9 @@ import backoff
 import re
 from datetime import date
 from collections import OrderedDict
-from simple_settings import settings
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from models import Vendor
+from simple_settings import settings
 
 
 FIREFOX_DRIVER_PATH = '%s/geckodriver' % os.path.dirname(os.path.realpath(__file__))
@@ -146,23 +145,27 @@ def clean_location_name(name):
     return re.sub(invalid_excel_chars, ' ', name)
 
 def insert_vendor(site_permit, business_name):
-    engine = create_engine(settings.DATABASES['ENGINE'])
+    if settings.USE_DATABASE:
+        # include models import here for now so we don't create if user doesn't want
+        from models import Vendor
 
-    if engine.dialect.has_table(engine, 'vendor'):
-        Session = sessionmaker(bind=engine)
-        session = Session()
+        engine = create_engine(settings.DATABASES['ENGINE'])
 
-        insert = {
-            "site_permit": site_permit,
-            "name": business_name
-        }
+        if engine.dialect.has_table(engine, 'vendor'):
+            Session = sessionmaker(bind=engine)
+            session = Session()
 
-        vendor = session.query(Vendor).filter_by(site_permit=site_permit).first()
-        if not vendor:
-            vendor = Vendor(**insert)
-            session.add(vendor)
+            insert = {
+                "site_permit": site_permit,
+                "name": business_name
+            }
 
-        session.commit()
+            vendor = session.query(Vendor).filter_by(site_permit=site_permit).first()
+            if not vendor:
+                vendor = Vendor(**insert)
+                session.add(vendor)
+
+            session.commit()
 
 
 '''
@@ -231,7 +234,7 @@ def run():
     # print( url )
     file = download_pdf(url)
     # print( file )
-    # file = 'input/lottery_results.pdf'
+    file = 'input/lottery_results.pdf'
     data = read_pdf(file)
     write_to_excel(data)
 

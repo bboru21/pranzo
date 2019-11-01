@@ -6,3 +6,4 @@ venv
 output/*
 input/*
 db/*
+settings/local.py
