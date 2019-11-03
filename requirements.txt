@@ -1,8 +1,8 @@
-selenium    #==3.141.
-requests    #==2.22.0
-PyPDF2      #==1.26.0
-pandas      #==0.24.2
-XlsxWriter  #==1.1.2
-backoff     #==1.8.0
-SQLAlchemy
+backoff
+pandas
+PyPDF2
+requests
+selenium
 simple-settings
+SQLAlchemy
+XlsxWriter
