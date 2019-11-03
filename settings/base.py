@@ -10,3 +10,6 @@ OUTPUT_PATH = 'output/'
 OUTPUT_FILENAME = 'lottery_results.xlsx'
 
 DEVELOPMENT = False # prevents url request and writing of files for easier development
+
+SERVER_URL = '0.0.0.0'
+SERVER_PORT = 6543

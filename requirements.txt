@@ -1,6 +1,7 @@
 backoff
 pandas
 PyPDF2
+pyramid
 requests
 selenium
 simple-settings

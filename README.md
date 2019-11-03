@@ -35,3 +35,8 @@ That's it for optaining the schedule via Excel Spreadsheet. If you want more, re
 Intended for creating a database to associate data with specific Food Trucks, such as reviews and truck names that deviate from that of the spreadsheet.
 
 Currently, vendors are not automatically added to the database when the main pranzo script is run. To have them added at runtime, set `USE_DATABASE = True` in your `settings/local.py` file.
+
+## Views
+```
+python3 views.py --settings=settings.local
+```
