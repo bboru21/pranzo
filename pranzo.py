@@ -22,7 +22,8 @@ FIREFOX_DRIVER_PATH = '%s/geckodriver' % os.path.dirname(os.path.realpath(__file
 URL = 'https://dcra.dc.gov/mrv'
 
 HEADING = '%s MRV Location Lottery Results' % date.today().strftime('%B %Y') # e.g. October 2019
-
+if settings.DEVELOPMENT and settings.DEVELOPMENT_HEADING:
+    HEADING = settings.DEVELOPMENT_HEADING
 
 class LastUpdatedOrderedDict(OrderedDict):
     'Store items in the order the keys were last added'
@@ -38,7 +39,12 @@ def remove_file(file):
         os.remove('%s' % file)
 
 def download_pdf(pdf_url):
+
     file = '%s%s' % (settings.INPUT_PATH, settings.INPUT_FILENAME)
+
+    if settings.DEVELOPMENT:
+        return file
+
     response = requests.get(pdf_url, stream=True)
 
     # remove old file if exists
@@ -59,6 +65,9 @@ def download_pdf(pdf_url):
     jitter=None
 )
 def get_pdf_url():
+
+    if settings.DEVELOPMENT:
+        return None
 
     driver = webdriver.Firefox(
         executable_path=FIREFOX_DRIVER_PATH,
@@ -219,6 +228,8 @@ def read_pdf(file):
     return data
 
 def write_to_excel(data):
+    if settings.DEVELOPMENT:
+        return False
 
     file = '%s%s' % (settings.OUTPUT_PATH, settings.OUTPUT_FILENAME)
     remove_file(file) # remove old file if exists
@@ -232,10 +243,7 @@ def write_to_excel(data):
 def run():
 
     url = get_pdf_url()
-    # print( url )
     file = download_pdf(url)
-    # print( file )
-    file = 'input/lottery_results.pdf'
     data = read_pdf(file)
     write_to_excel(data)
 

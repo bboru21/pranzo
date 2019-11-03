@@ -15,5 +15,5 @@ class Vendor(Base):
     name = Column(String)
     alias = Column(String)
 
-engine = create_engine(settings.DATABASES['ENGINE'], echo=True)
+engine = create_engine(settings.DATABASES['ENGINE'], echo=False)
 Base.metadata.create_all(engine)
