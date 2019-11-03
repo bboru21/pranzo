@@ -33,16 +33,16 @@ class LastUpdatedOrderedDict(OrderedDict):
         OrderedDict.__setitem__(self, key, value)
 
 
-def initial_cleanup():
-    if os.path.exists('%s%s' % (settings.INPUT_PATH, settings.INPUT_FILENAME)):
-        os.remove('%s%s' % (settings.INPUT_PATH, settings.INPUT_FILENAME))
-
-    if os.path.exists('%s%s' % (settings.OUTPUT_PATH, settings.OUTPUT_FILENAME)):
-        os.remove('%s%s' % (settings.OUTPUT_PATH, settings.OUTPUT_FILENAME))
+def remove_file(file):
+    if os.path.exists('%s' % file):
+        os.remove('%s' % file)
 
 def download_pdf(pdf_url):
     file = '%s%s' % (settings.INPUT_PATH, settings.INPUT_FILENAME)
     response = requests.get(pdf_url, stream=True)
+
+    # remove old file if exists
+    remove_file(file)
 
     with open(file,"wb+") as pdf:
         for chunk in response.iter_content(chunk_size=1024):
@@ -220,7 +220,9 @@ def read_pdf(file):
 
 def write_to_excel(data):
 
-    writer = pd.ExcelWriter('%s%s' % (settings.OUTPUT_PATH, settings.OUTPUT_FILENAME), engine='xlsxwriter')
+    file = '%s%s' % (settings.OUTPUT_PATH, settings.OUTPUT_FILENAME)
+    remove_file(file) # remove old file if exists
+    writer = pd.ExcelWriter(file, engine='xlsxwriter')
     for location, location_schedule in data.items():
         df = pd.DataFrame(location_schedule)
         df.to_excel(writer, sheet_name=location)
@@ -229,7 +231,6 @@ def write_to_excel(data):
 
 def run():
 
-    initial_cleanup()
     url = get_pdf_url()
     # print( url )
     file = download_pdf(url)
