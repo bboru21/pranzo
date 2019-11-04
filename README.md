@@ -37,6 +37,7 @@ Intended for creating a database to associate data with specific Food Trucks, su
 Currently, vendors are not automatically added to the database when the main pranzo script is run. To have them added at runtime, set `USE_DATABASE = True` in your `settings/local.py` file.
 
 ## Views
+Startup WSGI server:
 ```
-python3 views.py --settings=settings.local
+python3 serve.py --settings=settings.local
 ```
