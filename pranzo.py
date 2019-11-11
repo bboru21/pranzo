@@ -25,14 +25,6 @@ HEADING = '%s MRV Location Lottery Results' % date.today().strftime('%B %Y') # e
 if settings.DEVELOPMENT and settings.DEVELOPMENT_HEADING:
     HEADING = settings.DEVELOPMENT_HEADING
 
-class LastUpdatedOrderedDict(OrderedDict):
-    'Store items in the order the keys were last added'
-
-    def __setitem__(self, key, value):
-        if key in self:
-            del self[key]
-        OrderedDict.__setitem__(self, key, value)
-
 
 def remove_file(file):
     if os.path.exists('%s' % file):
@@ -87,7 +79,8 @@ def divide_chunks(l, n):
         yield l[i:i + n]
 
 '''
-    Some vendors names have commas and carriage returns, which screws up the readability.
+    Cleanup any data variants, such as certian vendor names ending in commas
+    or foward slashes, which will screw up data processing later.
 '''
 def clean_lines(lines):
     clean_lines = []
@@ -96,8 +89,20 @@ def clean_lines(lines):
     previous = ''
     previous_trailing_comma = False
 
+    try:
+        # try and remove pesky heading column
+        lines.remove(HEADING)
+    except ValueError:
+        print('WARNING: No HEADING \"%s\" was not found in %s. This may cause issues reading the data.' % (HEADING, settings.INPUT_FILENAME))
+
     for line in lines:
         line = line.rstrip()
+
+        '''
+            extractText unable to decode L'Enfants right single quote, so it
+            translates it to a blank string. Add it back here:
+        '''
+        line = 'L\'Enfant' if line == '' else line
 
         last_index = len(clean_lines)-1
 
@@ -106,7 +111,9 @@ def clean_lines(lines):
         else:
             clean_lines.append(line)
 
-        previous_trailing_comma = line.endswith(',')
+        previous_trailing_comma = ( line.endswith(',') or line.endswith('/') )
+
+    clean_lines = clean_lines[7:] # remove columns
 
     return clean_lines
 
@@ -121,14 +128,6 @@ def process_pages(pdf_reader):
         lines = text.splitlines()
 
         lines = clean_lines(lines)
-        try:
-            # try and remove pesky heading column
-            lines.remove(HEADING)
-        except ValueError:
-            print('WARNING: No HEADING \"%s\" was not found in %s. This may cause issues reading the data.' % (HEADING, settings.INPUT_FILENAME))
-
-        lines = ['L\'Enfant' if line == '' else line for line in lines] # correct encoding issue with right single quote
-        lines = lines[7:] # remove columns
 
         lines = list(divide_chunks(lines, 7))
 
@@ -201,13 +200,13 @@ def process_data(data):
             if location:
 
                 if location not in processed_data:
-                    processed_data[location] = LastUpdatedOrderedDict({
+                    processed_data[location] = {
                         'Monday': [],
                         'Tuesday': [],
                         'Wednesday': [],
                         'Thursday': [],
                         'Friday': [],
-                    })
+                    }
 
                 processed_data[location][dow].append(business_name)
 
@@ -215,7 +214,10 @@ def process_data(data):
 
     return processed_data
 
-def read_pdf(file):
+def read_pdf():
+
+    file = '%s%s' % (settings.INPUT_PATH, settings.INPUT_FILENAME)
+
     # TODO logic may need to be updated from time to time due to pdf formatting
     pdf_file = open(file, 'rb')
     pdf_reader = PyPDF2.PdfFileReader(pdf_file, strict=False)
@@ -227,6 +229,23 @@ def read_pdf(file):
 
     return data
 
+'''
+    Pandas needs all lists within spreadsheet to be of same length, so pad
+    lists with blank values to prevent ValueError Arrays Must be All Same
+    Length exceptions.
+
+    https://stackoverflow.com/questions/40442014/python-pandas-valueerror-arrays-must-be-all-same-length
+'''
+def pad_dict_list(dict_list, padel):
+    lmax = 0
+    for lname in dict_list.keys():
+        lmax = max(lmax, len(dict_list[lname]))
+    for lname in dict_list.keys():
+        ll = len(dict_list[lname])
+        if  ll < lmax:
+            dict_list[lname] += [padel] * (lmax - ll)
+    return dict_list
+
 def write_to_excel(data):
     if settings.DEVELOPMENT:
         return False
@@ -235,6 +254,7 @@ def write_to_excel(data):
     remove_file(file) # remove old file if exists
     writer = pd.ExcelWriter(file, engine='xlsxwriter')
     for location, location_schedule in data.items():
+        location_schedule = pad_dict_list( location_schedule, '' )
         df = pd.DataFrame(location_schedule)
         df.to_excel(writer, sheet_name=location)
     writer.save()
@@ -243,8 +263,8 @@ def write_to_excel(data):
 def run():
 
     url = get_pdf_url()
-    file = download_pdf(url)
-    data = read_pdf(file)
+    download_pdf(url)
+    data = read_pdf()
     write_to_excel(data)
 
     print( 'Schedule for %s has been downloaded to %s%s' % (HEADING, settings.OUTPUT_PATH, settings.OUTPUT_FILENAME))
