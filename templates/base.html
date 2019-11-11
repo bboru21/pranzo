@@ -1,0 +1,49 @@
+<html>
+    <head>
+        <title>Pranzo</title>
+
+        <style>
+            body {
+                font-family: verdana;
+            }
+            table {
+                cursor: pointer;
+                padding: 5px;
+                border-collapse: collapse;
+            }
+            tr:nth-child(even) {
+                background: #CCC;
+            }
+            td {
+                padding: 5px;
+            }
+            td:hover {
+                text-shadow: 2px 2px #999;
+            }
+        </style>
+    </head>
+    <body>
+        <%block name="header" />
+
+        ${self.body()}
+
+        <div class="footer">
+            <%block name="footer">
+
+            </%block>
+        </div>
+
+        <script>
+        (function() {
+            const table = document.querySelector('table');
+            table.addEventListener('click', event => {
+                const row = event.target.closest('tr');
+                if (row) {
+                    const id = row.getAttribute('id');
+                    alert('vendor id ' + id);
+                }
+            });
+        }());
+        </script>
+    </body>
+</html>

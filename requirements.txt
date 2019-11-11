@@ -2,6 +2,7 @@ backoff
 pandas
 PyPDF2
 pyramid
+pyramid-mako
 requests
 selenium
 simple-settings
