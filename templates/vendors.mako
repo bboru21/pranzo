@@ -22,3 +22,14 @@
         % endfor
     </tbody>
 </table>
+
+<div class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <form>
+            <input type="text" id="vendorName" placeholder="Name" />
+            <input type="text" id="vendorId" />
+            <input type="submit" id="submit" value="Update Vendor" />
+        </form>
+    </div>
+</div>

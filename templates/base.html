@@ -7,18 +7,59 @@
                 font-family: verdana;
             }
             table {
-                cursor: pointer;
                 padding: 5px;
                 border-collapse: collapse;
             }
             tr:nth-child(even) {
-                background: #CCC;
+                background: #b3e6d3;
             }
             td {
                 padding: 5px;
             }
-            td:hover {
-                text-shadow: 2px 2px #999;
+            tbody tr:hover {
+                text-shadow: 1px 1px 3px #888;
+                cursor: pointer;
+            }
+
+            .modal {
+                display: none;
+                position: fixed;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                background: transparent;
+                z-index: 1;
+                background-color: rgb(0,0,0); /* Fallback color */
+                background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            }
+
+            .modal-content {
+                position: relative;
+                background-color: white;
+                display: block;
+                margin: auto;
+                max-width: 500px;
+                max-height: 300px;
+                top: 50%;
+                border-radius: 3px;
+                padding: 20px;
+                box-shadow: 999px 2px #888888;
+                border: 1px solid #888;
+            }
+
+            .close {
+              color: #aaa;
+              float: right;
+              font-size: 28px;
+              font-weight: bold;
+            }
+
+            .close:hover,
+            .close:focus {
+              color: black;
+              text-decoration: none;
+              cursor: pointer;
             }
         </style>
     </head>
@@ -34,16 +75,47 @@
         </div>
 
         <script>
-        (function() {
-            const table = document.querySelector('table');
-            table.addEventListener('click', event => {
-                const row = event.target.closest('tr');
-                if (row) {
-                    const id = row.getAttribute('id');
-                    alert('vendor id ' + id);
+            (function() {
+
+                class VendorForm {
+                    constructor() {
+
+                        this.modal = document.querySelector('.modal');
+
+                        this.closeButton = this.modal.querySelector('.close');
+                        this.closeButton.addEventListener('click', this.closeModal);
+
+                        this.form = this.modal.querySelector('form');
+
+                        this.table = document.querySelector('table');
+                        this.table.addEventListener('click', this.handleTableClick );
+                    }
+
+                    openModal = (id) => {
+                        this.form.querySelector('#vendorId').value = id;
+                        this.modal.style.display = 'block';
+                    }
+
+                    closeModal = () => {
+                        this.modal.style.display = 'none';
+                    }
+
+                    handleTableClick = (event) => {
+
+                        const row = event.target.closest('tr');
+                        if (row) {
+                            const id = row.getAttribute('id');
+
+                            if (id) {
+                                this.openModal(id);
+                            }
+                        }
+                    }
                 }
-            });
-        }());
+
+                const vendorForm = new VendorForm();
+
+            }());
         </script>
     </body>
 </html>
