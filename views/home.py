@@ -16,6 +16,7 @@ def home_page(request):
     session = Session()
 
     for id, name, site_permit, alias in session.query(Vendor.id, Vendor.name, Vendor.site_permit, Vendor.alias):
+        alias = alias if alias else ''
         vendors.append({
             'id': id,
             'name': name,

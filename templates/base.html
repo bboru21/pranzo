@@ -5,19 +5,41 @@
         <style>
             body {
                 font-family: verdana;
+                color: #333;
+            }
+            .content {
+                max-width: 800px;
+                margin: auto;
             }
             table {
                 padding: 5px;
                 border-collapse: collapse;
+                border: 1px solid #CCC;
+                box-shadow: 0px 5px 18px -8px #CCCCCC;
+            }
+            table:hover {
+                box-shadow: 0px 5px 18px -8px #AAA;
+            }
+            th {
+                text-align: left;
             }
             tr:nth-child(even) {
                 background: #b3e6d3;
             }
-            td {
-                padding: 5px;
+            tr:nth-child(even):hover td {
+                background: #60c09c;
+            }
+            tr:nth-child(odd) {
+                background: #FFF;
+            }
+            tr:nth-child(odd):hover td {
+                background: #eee;
+            }
+
+            th, td {
+                padding: 10px;
             }
             tbody tr:hover {
-                text-shadow: 1px 1px 3px #888;
                 cursor: pointer;
             }
 
@@ -49,29 +71,68 @@
             }
 
             .close {
-              color: #aaa;
-              float: right;
-              font-size: 28px;
-              font-weight: bold;
+                color: #aaa;
+                float: right;
+                font-size: 28px;
+                font-weight: bold;
             }
 
             .close:hover,
             .close:focus {
-              color: black;
-              text-decoration: none;
-              cursor: pointer;
+                color: black;
+                text-decoration: none;
+                cursor: pointer;
+            }
+
+            .modal-content form {
+                display: flex;
+                flex-wrap: wrap;
+            }
+            .modal-content label {
+                display: flex;
+                flex-basis: 100%;
+                margin-bottom: 0.25rem;
+            }
+
+            .modal-content input {
+                display: flex;
+                font-size: 1.0rem;
+                line-height: 1.5rem;
+                margin-bottom: 1.0rem;
+                flex-basis: 100%;
+                padding: 0.5rem;
+            }
+            .modal-content input[disabled] {
+                background: #f2f2f2;
+                border: 0;
+            }
+
+            .modal-content input[type="submit"] {
+                border: 0;
+                color: #FFF;
+                background: #008000;
+                border-radius: 5px;
+                padding: 0.5rem;
+                display: block;
+                flex-basis: 200px;
+                cursor: pointer;
+            }
+            .modal-content input[type="submit"]:hover {
+                background: #009900;
             }
         </style>
     </head>
     <body>
-        <%block name="header" />
+        <div class="content">
+            <%block name="header" />
 
-        ${self.body()}
+            ${self.body()}
 
-        <div class="footer">
-            <%block name="footer">
+            <div class="footer">
+                <%block name="footer">
 
-            </%block>
+                </%block>
+            </div>
         </div>
 
         <script>
@@ -89,10 +150,21 @@
 
                         this.table = document.querySelector('table');
                         this.table.addEventListener('click', this.handleTableClick );
+
+                        this.vendorData = {
+                            'id': null,
+                            'name': null,
+                            'sitePermit': null,
+                            'alias': null,
+                        };
                     }
 
-                    openModal = (id) => {
-                        this.form.querySelector('#vendorId').value = id;
+                    openModal = () => {
+                        this.form.querySelector('#vendorId').value = this.vendorData.id;
+                        this.form.querySelector('#vendorName').value = this.vendorData.name;
+                        this.form.querySelector('#vendorSitePermit').value = this.vendorData.sitePermit;
+                        this.form.querySelector('#vendorAlias').value = this.vendorData.alias;
+
                         this.modal.style.display = 'block';
                     }
 
@@ -103,11 +175,21 @@
                     handleTableClick = (event) => {
 
                         const row = event.target.closest('tr');
+                        let columns, name, site_permit, alias;
                         if (row) {
                             const id = row.getAttribute('id');
 
                             if (id) {
-                                this.openModal(id);
+                                columns = row.querySelectorAll('td');
+
+                                this.vendorData = {
+                                    'id': id,
+                                    'name': columns[0].textContent,
+                                    'sitePermit': columns[1].textContent,
+                                    'alias': columns[2].textContent || ''
+                                };
+
+                                this.openModal();
                             }
                         }
                     }

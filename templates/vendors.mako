@@ -27,9 +27,25 @@
     <div class="modal-content">
         <span class="close">&times;</span>
         <form>
-            <input type="text" id="vendorName" placeholder="Name" />
-            <input type="text" id="vendorId" />
+
+            <label for="vendorName">
+                Name:
+            </label>
+            <input type="text" id="vendorName" disabled />
+
+            <label for="vendorSitePermit">
+                Site&nbsp;Permit:
+            </label>
+            <input type="text" id="vendorSitePermit" disabled />
+
+            <label for="vendorAlias">
+                Alias:
+            </label>
+            <input type="text" id="vendorAlias" placeholder="Enter Alias Here" />
+
+            <input type="hidden" id="vendorId" />
             <input type="submit" id="submit" value="Update Vendor" />
         </form>
     </div>
 </div>
+
