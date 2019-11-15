@@ -39,5 +39,5 @@ Currently, vendors are not automatically added to the database when the main pra
 ## Views
 Startup WSGI server:
 ```
-python3 serve.py --settings=settings.local
+source venv/bin/activate && python3 serve.py --settings=settings.local
 ```

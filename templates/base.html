@@ -148,6 +148,7 @@
 
                         this.form = this.modal.querySelector('form');
 
+
                         this.table = document.querySelector('table');
                         this.table.addEventListener('click', this.handleTableClick );
 
@@ -165,11 +166,25 @@
                         this.form.querySelector('#vendorSitePermit').value = this.vendorData.sitePermit;
                         this.form.querySelector('#vendorAlias').value = this.vendorData.alias;
 
+                        document.addEventListener('keyup', this.handleKeyup);
+
                         this.modal.style.display = 'block';
+
+                        this.form.querySelector('#vendorAlias').focus();
                     }
 
                     closeModal = () => {
+                        document.removeEventListener('keyup', this.handleKeyup);
                         this.modal.style.display = 'none';
+                    }
+
+                    handleKeyup = (event) => {
+                        if (event.isComposing || event.keyCode === 229) {
+                            return;
+                        }
+                        if (event.keyCode === 27) {
+                            this.closeModal();
+                        }
                     }
 
                     handleTableClick = (event) => {
