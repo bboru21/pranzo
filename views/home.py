@@ -6,6 +6,13 @@ from sqlalchemy.orm import sessionmaker
 from models import Vendor
 from simple_settings import settings
 
+@view_config(route_name='update_alias', renderer='json')
+def update_alias(request):
+
+    print(request.POST)
+
+    return { 'success': True }
+
 @view_config(route_name='home', renderer='../templates/vendors.mako')
 def home_page(request):
 
