@@ -36,8 +36,8 @@ Intended for creating a database to associate data with specific Food Trucks, su
 
 Currently, vendors are not automatically added to the database when the main pranzo script is run. To have them added at runtime, set `USE_DATABASE = True` in your `settings/local.py` file.
 
-## Views
-Startup WSGI server:
+## Update Pranzo Food Truck Mappings
+If you have setup the database, and wish to map Businesses to their actual food truck names, you can do by via .mako template by starting up the wsgi server and visting the printed URL in your browser:
 ```
 source venv/bin/activate && python3 serve.py --settings=settings.local
 ```
