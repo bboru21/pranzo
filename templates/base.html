@@ -180,23 +180,25 @@
                         this.modal.style.display = 'none';
                     }
 
-                    updateVendorAlias(alias) {
+                    updateVendorAlias(alias, id, name) {
                         var xhr = new XMLHttpRequest();
                         xhr.open('POST', '/update_alias', true);
                         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
                         xhr.onreadystatechange = function() { // Call a function when the state changes.
                             if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-                                console.log(xhr.responseText);
+                                let response = JSON.parse(xhr.responseText);
+                                let message =  response['success'] ? name + ' was updated.' : name + ' was not updated.';
+                                alert(message);
                             }
                         }
-                        xhr.send("id="+ this.vendorData.id +"&alias=" + alias);
+                        xhr.send("id="+ id +"&alias=" + alias);
                     }
 
                     handleSubmit = (event) => {
                         event.preventDefault();
 
                         const alias = this.form.querySelector('#vendorAlias').value;
-                        alias !== this.vendorData.alias && this.updateVendorAlias(alias);
+                        alias !== this.vendorData.alias && this.updateVendorAlias(alias, this.vendorData['id'], this.vendorData['name']);
                     }
 
                     handleKeyup = (event) => {
