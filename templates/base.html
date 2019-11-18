@@ -141,6 +141,8 @@
                 class VendorForm {
                     constructor() {
 
+                        this.vendorsData = JSON.parse(document.querySelector("#vendorsData").innerHTML);
+
                         this.modal = document.querySelector('.modal');
 
                         this.closeButton = this.modal.querySelector('.close');

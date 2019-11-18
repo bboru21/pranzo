@@ -4,6 +4,16 @@
     <h1>D.C. Food Trucks</h1>
 </%block>
 
+<!--
+<form id="search" autocomplete="off">
+    <label for="searchName">Search Vendor Name</label>
+    <input type="text" id="searchName" placeholder="Search Vendor Name" />
+
+    <label for="searchSitePermit">Search Site Permit</label>
+    <input type="text" id="searchSitePermit" placeholder="Search Vendor Site Permit" />
+</form>
+-->
+
 <table>
     <thead>
         <tr>
@@ -22,6 +32,24 @@
         % endfor
     </tbody>
 </table>
+
+<script id="vendorsData" type="application/json">
+{
+    "vendors": [
+        % for vendor in vendors:
+            {
+                "id": ${vendor['id']},
+                "name": "${vendor['name']}",
+                "sitePermit": "${vendor['site_permit']}",
+                "alias": "${vendor['alias']}"
+            }
+            % if not loop.last:
+                ,
+            % endif
+        % endfor
+    ]
+}
+</script>
 
 <div class="modal">
     <div class="modal-content">
